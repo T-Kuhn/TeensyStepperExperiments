@@ -5,21 +5,24 @@
  */
 
 #include <Arduino.h>
+#include "Constants.h"
 
 void setup()
 {
   // initialize LED digital pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
+
 }
 
 void loop()
 {
-  // turn the LED on (HIGH is the voltage level)
+  digitalWrite(STEPPER1_DIR_PIN, HIGH);
+
+  delay(2);
   digitalWrite(LED_BUILTIN, HIGH);
-  // wait for a second
-  delay(1000);
-  // turn the LED off by making the voltage LOW
+  digitalWrite(STEPPER1_STEP_PIN, HIGH);
+
+  delay(2);
   digitalWrite(LED_BUILTIN, LOW);
-  // wait for a second
-  delay(1000);
+  digitalWrite(STEPPER1_STEP_PIN, LOW);
 }
