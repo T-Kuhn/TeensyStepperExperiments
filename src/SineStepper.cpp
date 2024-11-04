@@ -70,7 +70,7 @@ void SineStepper::setStepsToTakeToZero()
 // - - - - - - - - - - - - - - -
 uint8_t SineStepper::pulseFromAmplitude(float stepsToTake, float cosine)
 {
-    uint32_t doubledStepCount = (uint32_t)(round(cosine * stepsToTake));
+    uint32_t doubledStepCount = (uint32_t)(round(cosine * abs(stepsToTake)));
     uint8_t stepLevel = doubledStepCount % 2;
 
     if (stepLevel > _lastPulse)
