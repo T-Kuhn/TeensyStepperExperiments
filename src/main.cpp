@@ -6,23 +6,64 @@
 
 #include <Arduino.h>
 #include "Constants.h"
+#include "SineStepper.h"
+#include "SineStepperController.h"
+#include "MoveBatch.h"
+
+enum Mode
+{
+    idle,
+    doingControlledMovements,
+    error
+};
+
+Mode currentMode = idle;
+
+SineStepper sineStepper1(STEPPER1_STEP_PIN, STEPPER1_DIR_PIN, /*id:*/ 0);
+SineStepperController sineStepperController(/*endlessRepeat:*/ false);
+IntervalTimer myTimer;
+
+void onTimer()
+{
+    digitalWrite(EXECUTING_ISR_CODE, HIGH);
+
+    switch (currentMode)
+    {
+    case idle:
+        break;
+    case doingControlledMovements:
+        sineStepperController.update();
+        digitalWrite(EXECUTING_ISR_CODE, LOW);
+        break;
+    default:
+        break;
+    }
+}
 
 void setup()
 {
-  // initialize LED digital pin as an output.
-  pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(EXECUTING_ISR_CODE, OUTPUT);
 
+    myTimer.begin(onTimer, TIMER_US);
+
+    sineStepperController.attach(&sineStepper1);
 }
 
 void loop()
 {
-  digitalWrite(STEPPER1_DIR_PIN, HIGH);
+    delay(4200);
 
-  delay(2);
-  digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(STEPPER1_STEP_PIN, HIGH);
+    currentMode = idle;
+    delay(1000);
 
-  delay(2);
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(STEPPER1_STEP_PIN, LOW);
+    MoveBatch* mb = &sineStepperController.moveBatches[0];
+    mb->addMove(/*id:*/ 0, /*pos:*/ (int32_t)(PULSES_PER_REV * 25.0 / (M_PI * 2)));
+    mb->moveDuration = 0.15;
+
+    MoveBatch* mb2 = &sineStepperController.moveBatches[1];
+    mb2->addMove(/*id:*/ 0, /*pos:*/ (int32_t)(PULSES_PER_REV * 0 / (M_PI * 2)));
+    mb2->moveDuration = 0.15;
+
+    sineStepperController.resetMoveBatchExecution();
+    currentMode = doingControlledMovements;
 }
