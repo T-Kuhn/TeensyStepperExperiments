@@ -58,11 +58,11 @@ void loop()
 
     MoveBatch* mb = &sineStepperController.moveBatches[0];
     mb->addMove(/*id:*/ 0, /*pos:*/ (int32_t)(PULSES_PER_REV * 25.0 / (M_PI * 2)));
-    mb->moveDuration = 0.15;
+    mb->moveDuration = 1;
 
     MoveBatch* mb2 = &sineStepperController.moveBatches[1];
     mb2->addMove(/*id:*/ 0, /*pos:*/ (int32_t)(PULSES_PER_REV * 0 / (M_PI * 2)));
-    mb2->moveDuration = 0.15;
+    mb2->moveDuration = 1;
 
     sineStepperController.resetMoveBatchExecution();
     currentMode = doingControlledMovements;
